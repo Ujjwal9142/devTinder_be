@@ -4,14 +4,13 @@ const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
 const figlet = require("figlet");
-const multer = require("multer");
 const colors = require("colors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSetup = require("./helpers/swaggerSetup");
 const errorHandler = require("./middlewares/errorHandler");
-const fallback = require("./middlewares/fallback");
 const fallbackRoute = require("./middlewares/fallback");
 const connectDB = require("./config/db");
+const appRoutes = require("./routes/index");
 
 const app = express();
 dotenv.config();
@@ -28,6 +27,7 @@ app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
 // Routes
+app.use("/api/v1", appRoutes);
 
 // Initialize SwaggerJS
 const swaggerSpec = swaggerSetup("v1");
@@ -55,7 +55,7 @@ const startServer = async () => {
     });
   } catch (err) {
     console.log(`Error: ${err}`);
-    process.exit();
+    process.exit(1);
   }
 };
 

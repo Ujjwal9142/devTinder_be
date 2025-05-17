@@ -15,7 +15,17 @@ module.exports = (router) => {
         .withMessage(con.accountManagement.PASSWORD_PATTERN),
       check("gender", con.accountManagement.GENDER_ERROR).isIn(["male", "female", "other"]),
       check("email", con.accountManagement.INVALID_EMAIL).isEmail(),
+      check("dob").isISO8601().withMessage(con.accountManagement.INVALID_DOB),
     ],
     accountSetupController.signup
+  );
+
+  router.post(
+    "/login",
+    [
+      check("email", con.accountManagement.INVALID_EMAIL).isEmail(),
+      check("password", con.accountManagement.LOGIN_FAILED).isLength({ min: 6, max: 30 }),
+    ],
+    accountSetupController.login
   );
 };

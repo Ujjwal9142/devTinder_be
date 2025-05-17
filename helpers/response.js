@@ -1,6 +1,6 @@
 const statusCodes = require("./statusCodes");
 
-module.exports = class ResponseHelper {
+module.exports = class ResponseHelper extends statusCodes {
   static async cResponse(req, res, status, info, data = null) {
     let customMsg;
     if (info.stack) {

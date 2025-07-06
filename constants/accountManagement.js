@@ -2,7 +2,7 @@ module.exports = Object.freeze({
   SIGNUP_SUCESSFULL: "Signed up successfully",
   UPDATE_SUCCESS: "Updated successfully",
   NO_RECORD: "No Record found",
-  RECORD_SUCCESS: "Record found successfully",
+  RECORD_SUCCESS: "Records found successfully",
   LOGIN_SUCCESSFULL: "Login successfully",
   LOGOUT: "Logout successfully",
   INVALID_TOKEN: "Invalid token",

@@ -1,0 +1,82 @@
+paths:
+  /signup:
+    post:
+      tags:
+        - accountSetup
+      summary: New user signup
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Request parameters
+        description: New user signup
+        required: true
+        schema:
+          $ref: '#/definitions/signup' 
+      responses:
+        201:
+          description: An object with response status and data
+  
+  /login:
+    post:
+      tags:
+        - accountSetup
+      summary: User login
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: Request parameters
+        description: User login
+        required: true
+        schema:
+          $ref: '#/definitions/login' 
+      responses:
+        200:
+          description: An object with response status and data
+  
+#=============================Definitions================================
+definitions:
+  signup:
+    type: object
+    properties:
+      firstName:
+        type: string
+        required: true
+        example: 'Monkey D'
+      lastName:
+        type: string
+        required: true
+        example: 'Luffy'
+      email:
+        type: string
+        required: true
+        example: 'luffy@gmail.com'
+      password:
+        type: string
+        required: true
+        example: 'Test@123'
+      confirmPassword:
+        type: string
+        required: true
+        example: 'Test@123'
+      gender:
+        type: string
+        required: true
+        example: 'male'
+      dob:
+        type: string
+        required: true
+        example: '2025-05-17'
+
+  login:
+    type: object
+    properties:
+      email:
+        type: string
+        required: true
+        example: 'luffy@gmail.com'
+      password:
+        type: string
+        required: true
+        example: 'Test@123'

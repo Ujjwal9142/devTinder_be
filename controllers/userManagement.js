@@ -49,6 +49,18 @@ const userManagementController = {
       users: formattedUsers,
     });
   }),
+
+  deleteUser: asyncWrapper(async (req, res) => {
+    validationHelper(req);
+    const { userId } = req.query;
+    const signedInUserId = req.user._id;
+
+    if (signedInUserId != userId) {
+      return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.UNAUTHORIZED_ACTION);
+    }
+    await User.findByIdAndDelete(userId);
+    return resp.cResponse(req, res, resp.SUCCESS, con.userManagement.USER_DELETED);
+  }),
 };
 
 module.exports = userManagementController;

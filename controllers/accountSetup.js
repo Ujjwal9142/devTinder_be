@@ -6,6 +6,7 @@ const resp = require("../helpers/response");
 const validationHelper = require("../helpers/validation");
 const con = require("../constants/index");
 const common = require("../helpers/common");
+const moment = require("moment");
 
 const accountSetupController = {
   signup: asyncWrapper(async (req, res) => {
@@ -51,11 +52,12 @@ const accountSetupController = {
     }
 
     const userDetails = {
+      id: existingUser._id,
       firstName: existingUser.firstName,
       lastName: existingUser.lastName,
       email: existingUser.email,
       gender: existingUser.gender,
-      dob: existingUser.dateOfBirth,
+      dob: moment(existingUser.dateOfBirth).format("YYYY-MM-DD"),
     };
     const jwt_secret = process.env.JWT_SECRET;
     const token = jwt.sign(userDetails, jwt_secret, {

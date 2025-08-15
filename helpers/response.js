@@ -3,13 +3,13 @@ const statusCodes = require("./statusCodes");
 module.exports = class ResponseHelper extends statusCodes {
   static async cResponse(req, res, status, info, data = null) {
     let customMsg;
-    if (info.stack) {
-      if (info.errorMessage) {
-        customMsg = info.errorMessage;
-        info = info.name;
+    if (info?.stack) {
+      if (info?.errorMessage) {
+        customMsg = info?.errorMessage;
+        info = info?.name;
       } else {
-        customMsg = info.stack;
-        info = info.message;
+        customMsg = info?.stack;
+        info = info?.message;
       }
     }
 

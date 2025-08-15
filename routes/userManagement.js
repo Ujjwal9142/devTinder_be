@@ -1,13 +1,14 @@
 const { check } = require("express-validator");
 const userManagementController = require("../controllers/userManagement");
 const con = require("../constants/index");
+const common = require("../helpers/common");
+const isUserAuthenticated = require("../middlewares/isAuth");
 
 module.exports = (router) => {
   router.get(
     "/getUserByEmail",
-    [
-      check("email", con.accountManagement.INVALID_EMAIL).isEmail(),
-    ],
+    [check("email", con.accountManagement.INVALID_EMAIL).isEmail()],
+    isUserAuthenticated,
     userManagementController.getUserByEmail
   );
 
@@ -22,6 +23,22 @@ module.exports = (router) => {
 
       check("pageSize").optional().isIn([10, 25, 50, 100]).withMessage(con.userManagement.INVALID_PAGE_SIZE),
     ],
+    isUserAuthenticated,
     userManagementController.feed
+  );
+
+  router.delete(
+    "/deleteUser",
+    [
+      check("userId").custom((value) => {
+        if (!common.isValidMongoId(value)) {
+          const error = new Error(con.userManagement.INVALID_USER_ID);
+          throw error;
+        }
+        return true;
+      }),
+    ],
+    isUserAuthenticated,
+    userManagementController.deleteUser
   );
 };

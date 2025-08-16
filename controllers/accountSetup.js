@@ -11,7 +11,18 @@ const moment = require("moment");
 const accountSetupController = {
   signup: asyncWrapper(async (req, res) => {
     validationHelper(req);
-    const { firstName, lastName, password, confirmPassword, email, gender, dob } = req.body;
+    const {
+      firstName,
+      lastName,
+      password,
+      confirmPassword,
+      email,
+      gender,
+      dob,
+      about,
+      imageUrl,
+      skills,
+    } = req.body;
     if (password !== confirmPassword) {
       return resp.cResponse(req, res, resp.BAD_REQUEST, con.accountManagement.PASSWORD_MISMATCH);
     }
@@ -27,14 +38,19 @@ const accountSetupController = {
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    const newUser = new User({
+    const userData = {
       firstName,
       lastName,
       email,
       gender,
       password: hashedPassword,
       dateOfBirth: dob,
-    });
+    };
+    if (about || about === "") userData.about = about;
+    if (imageUrl) userData.imageUrl = imageUrl;
+    if (skills && skills.length > 0) userData.skills = skills;
+
+    const newUser = new User(userData);
     await newUser.save();
     return resp.cResponse(req, res, resp.CREATED, con.accountManagement.SIGNUP_SUCESSFULL);
   }),
@@ -53,11 +69,7 @@ const accountSetupController = {
 
     const userDetails = {
       id: existingUser._id,
-      firstName: existingUser.firstName,
-      lastName: existingUser.lastName,
       email: existingUser.email,
-      gender: existingUser.gender,
-      dob: moment(existingUser.dateOfBirth).format("YYYY-MM-DD"),
     };
     const jwt_secret = process.env.JWT_SECRET;
     const token = jwt.sign(userDetails, jwt_secret, {

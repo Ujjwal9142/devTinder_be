@@ -6,8 +6,14 @@ module.exports = (router) => {
   router.post(
     "/signup",
     [
-      check("firstName", con.accountManagement.FIRST_NAME).isString().trim().isLength({ min: 3, max: 30 }),
-      check("lastName", con.accountManagement.LAST_NAME).isString().trim().isLength({ min: 3, max: 30 }),
+      check("firstName", con.accountManagement.FIRST_NAME)
+        .isString()
+        .trim()
+        .isLength({ min: 3, max: 30 }),
+      check("lastName", con.accountManagement.LAST_NAME)
+        .isString()
+        .trim()
+        .isLength({ min: 3, max: 30 }),
       check("password")
         .isLength({ min: 6, max: 30 })
         .withMessage(con.accountManagement.PASSWORD_LENGTH)
@@ -16,6 +22,14 @@ module.exports = (router) => {
       check("gender", con.accountManagement.GENDER_ERROR).isIn(["male", "female", "other"]),
       check("email", con.accountManagement.INVALID_EMAIL).isEmail(),
       check("dob").isISO8601().withMessage(con.accountManagement.INVALID_DOB),
+      check("about", con.accountManagement.INVALID_ABOUT)
+        .optional()
+        .isString()
+        .trim()
+        .isLength({ min: 0, max: 100 }),
+      check("imageUrl", con.accountManagement.INVALID_IMAGE).optional().isString().trim(),
+      check("skills", con.accountManagement.SKILLS).optional().isArray(),
+      check("skills.*", con.accountManagement.SKILL).isString(),
     ],
     accountSetupController.signup
   );

@@ -6,4 +6,5 @@ module.exports = Object.freeze({
   INVALID_PAGE_SIZE: "Page size must be one of 10, 25, 50, or 100",
   INVALID_USER_ID: "User id must be a valid id",
   USER_DELETED: "User deleted successfully",
+  USER_UPDATED: "User information updated successfully",
 });

@@ -25,4 +25,8 @@ module.exports = Object.freeze({
   DOB_IN_PAST: "DOB must be in the past",
   MIN_AGE_SIGNUP: "You must be at least 15 years old to sign up",
   NO_AUTH_HEADER: "Authorization header doesn't exist",
+  INVALID_ABOUT: "About should be a string and maximum 100 characters in length",
+  INVALID_IMAGE: "Image url should be a string",
+  SKILLS: "Skills must be an array",
+  SKILL: "Each skill must be a string",
 });

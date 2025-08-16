@@ -21,6 +21,9 @@ const userManagementController = {
       lastName: user.lastName,
       dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
       gender: user.gender,
+      imageUrl: user.imageUrl,
+      skills: user.skills,
+      about: user.about,
     };
     return resp.cResponse(req, res, resp.SUCCESS, con.userManagement.USER_FOUND_SUCESSFULLY, {
       user: userDetails,
@@ -44,6 +47,9 @@ const userManagementController = {
       lastName: user.lastName,
       dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
       gender: user.gender,
+      imageUrl: user.imageUrl,
+      skills: user.skills,
+      about: user.about,
     }));
     return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
       users: formattedUsers,
@@ -60,6 +66,49 @@ const userManagementController = {
     }
     await User.findByIdAndDelete(userId);
     return resp.cResponse(req, res, resp.SUCCESS, con.userManagement.USER_DELETED);
+  }),
+
+  updateUser: asyncWrapper(async (req, res) => {
+    validationHelper(req);
+    const { userId, firstName, lastName, gender, email, dob, about, imageUrl, skills } = req.body;
+    const signedInUserId = req.user._id;
+    if (userId != signedInUserId) {
+      return resp.cResponse(req, res, resp.UNAUTHORIZED, con.accountManagement.UNAUTHORIZED_ACTION);
+    }
+
+    const existingUser = await User.findOne({ email: email });    
+    if (existingUser._id != userId) {
+      return resp.cResponse(req, res, resp.CONFLICT, con.accountManagement.USER_EXISTS);
+    }
+
+    let userToUpdate = await User.findById(userId);
+    if (!userToUpdate) {
+      return resp.cResponse(req, res, resp.NOT_FOUND, con.accountManagement.NO_USER);
+    }
+    userToUpdate.firstName = firstName;
+    userToUpdate.lastName = lastName;
+    userToUpdate.gender = gender;
+    userToUpdate.email = email;
+    userToUpdate.dateOfBirth = dob;
+    if (about || about === "") userToUpdate.about = about;
+    if (imageUrl) userToUpdate.imageUrl = imageUrl;
+    if (skills && skills.length > 0) userToUpdate.skills = skills;
+
+    const updatedUser = await userToUpdate.save();
+    const updatedResponse = {
+      userId: updatedUser._id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      email: updatedUser.email,
+      gender: updatedUser.gender,
+      dob: moment(updatedUser.dateOfBirth).format("YYYY-MM-DD"),
+      imageUrl: updatedUser.imageUrl,
+      skills: updatedUser.skills,
+      about: updatedUser.about,
+    };
+    return resp.cResponse(req, res, resp.SUCCESS, con.userManagement.USER_UPDATED, {
+      user: updatedResponse,
+    });
   }),
 };
 

@@ -27,8 +27,10 @@ module.exports = (router) => {
         .isString()
         .trim()
         .isLength({ min: 0, max: 100 }),
-      check("imageUrl", con.accountManagement.INVALID_IMAGE).optional().isString().trim(),
-      check("skills", con.accountManagement.SKILLS).optional().isArray(),
+      check("imageUrl", con.accountManagement.INVALID_IMAGE)
+        .optional()
+        .isURL({ protocols: ["http", "https"], require_protocol: true }),
+      check("skills", con.accountManagement.SKILLS).optional().isArray({ max: 20 }),
       check("skills.*", con.accountManagement.SKILL).isString(),
     ],
     accountSetupController.signup

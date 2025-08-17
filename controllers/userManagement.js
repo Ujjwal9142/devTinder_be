@@ -16,11 +16,11 @@ const userManagementController = {
     }
     const userDetails = {
       id: user._id,
-      email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
+      email: user.email,
       gender: user.gender,
+      dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
       imageUrl: user.imageUrl,
       skills: user.skills,
       about: user.about,
@@ -42,11 +42,11 @@ const userManagementController = {
     }
     const formattedUsers = users.map((user) => ({
       id: user._id,
-      email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
+      email: user.email,
       gender: user.gender,
+      dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
       imageUrl: user.imageUrl,
       skills: user.skills,
       about: user.about,
@@ -76,7 +76,7 @@ const userManagementController = {
       return resp.cResponse(req, res, resp.UNAUTHORIZED, con.accountManagement.UNAUTHORIZED_ACTION);
     }
 
-    const existingUser = await User.findOne({ email: email });    
+    const existingUser = await User.findOne({ email: email });
     if (existingUser._id != userId) {
       return resp.cResponse(req, res, resp.CONFLICT, con.accountManagement.USER_EXISTS);
     }
@@ -96,7 +96,7 @@ const userManagementController = {
 
     const updatedUser = await userToUpdate.save();
     const updatedResponse = {
-      userId: updatedUser._id,
+      id: updatedUser._id,
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
       email: updatedUser.email,
@@ -108,6 +108,24 @@ const userManagementController = {
     };
     return resp.cResponse(req, res, resp.SUCCESS, con.userManagement.USER_UPDATED, {
       user: updatedResponse,
+    });
+  }),
+
+  getUserProfile: asyncWrapper(async (req, res) => {
+    validationHelper(req);
+    const userInfo = {
+      id: req.user._id,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      email: req.user.email,
+      gender: req.user.gender,
+      dob: moment(req.user.dateOfBirth).format("YYYY-MM-DD"),
+      imageUrl: req.user.imageUrl,
+      skills: req.user.skills,
+      about: req.user.about,
+    };
+    return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
+      user: userInfo,
     });
   }),
 };

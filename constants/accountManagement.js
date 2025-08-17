@@ -15,7 +15,8 @@ module.exports = Object.freeze({
   FIRST_NAME: "First name must be between 3 and 30 characters in length",
   LAST_NAME: "Last name must be between 3 and 30 characters in length",
   PASSWORD_LENGTH: "Password must be 6 to 30 characters long",
-  PASSWORD_PATTERN: "Password must contain at least one digit, one uppercase letter, one lowercase letter and one special character",
+  PASSWORD_PATTERN:
+    "Password must contain at least one digit, one uppercase letter, one lowercase letter and one special character",
   GENDER_ERROR: "Gender must be either 'male', 'female' or 'other'",
   NO_USER: "No user found for these credentials",
   NO_AUTH_HEADER: "Authorization header doesn't exist",
@@ -26,7 +27,7 @@ module.exports = Object.freeze({
   MIN_AGE_SIGNUP: "You must be at least 15 years old to sign up",
   NO_AUTH_HEADER: "Authorization header doesn't exist",
   INVALID_ABOUT: "About should be a string and maximum 100 characters in length",
-  INVALID_IMAGE: "Image url should be a string",
-  SKILLS: "Skills must be an array",
+  INVALID_IMAGE: "Image URL must be a valid URL",
+  SKILLS: "Skills must be an array with at most 20 items",
   SKILL: "Each skill must be a string",
 });

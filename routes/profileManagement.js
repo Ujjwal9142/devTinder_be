@@ -39,7 +39,6 @@ module.exports = (router) => {
         .trim()
         .isLength({ min: 3, max: 30 }),
       check("gender", con.accountManagement.GENDER_ERROR).isIn(["male", "female", "other"]),
-      check("email", con.accountManagement.INVALID_EMAIL).isEmail(),
       check("dob").isISO8601().withMessage(con.accountManagement.INVALID_DOB),
       check("about", con.accountManagement.INVALID_ABOUT)
         .optional()
@@ -57,4 +56,28 @@ module.exports = (router) => {
   );
 
   router.get("/getUserProfile", isUserAuthenticated, profileManagementController.getUserProfile);
+
+  router.patch(
+    "/updateUserPassword",
+    isUserAuthenticated,
+    [
+      check("userId").custom((value) => {
+        if (!common.isValidMongoId(value)) {
+          const error = new Error(con.userManagement.INVALID_USER_ID);
+          throw error;
+        }
+        return true;
+      }),
+      check("currentPassword", con.userManagement.PASSWORD_NOT_EXIST)
+        .isString()
+        .trim()
+        .isLength({ min: 1 }),
+      check("newPassword")
+        .isLength({ min: 6, max: 30 })
+        .withMessage(con.accountManagement.PASSWORD_LENGTH)
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).*$/)
+        .withMessage(con.accountManagement.PASSWORD_PATTERN),
+    ],
+    profileManagementController.updateUserPassword
+  );
 };

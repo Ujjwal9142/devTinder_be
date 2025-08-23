@@ -7,4 +7,7 @@ module.exports = Object.freeze({
   INVALID_USER_ID: "User id must be a valid id",
   USER_DELETED: "User deleted successfully",
   USER_UPDATED: "User information updated successfully",
+  PASSWORD_NOT_EXIST: "Current passowrd field cannot be blank",
+  PASSWORD_CHANGED: "Password changed successfully",
+  CURRENT_PASSWORD_INCORRECT: "The provided current password is incorrect",
 });

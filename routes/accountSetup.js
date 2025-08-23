@@ -44,4 +44,6 @@ module.exports = (router) => {
     ],
     accountSetupController.login
   );
+
+  router.post("/logout", accountSetupController.logout);
 };

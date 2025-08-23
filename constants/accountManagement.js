@@ -4,7 +4,7 @@ module.exports = Object.freeze({
   NO_RECORD: "No Record found",
   RECORD_SUCCESS: "Records found successfully",
   LOGIN_SUCCESSFULL: "Login successfully",
-  LOGOUT: "Logout successfully",
+  LOGOUT_SUCCESSFULL: "Logged out successfully",
   INVALID_TOKEN: "Invalid token",
   NO_TOKEN: "No token, authorization failed",
   USER_EXISTS: "An account related to this email id already exists, please try another one",

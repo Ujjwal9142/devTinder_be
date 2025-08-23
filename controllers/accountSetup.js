@@ -79,6 +79,19 @@ const accountSetupController = {
       token,
     });
   }),
+
+  logout: asyncWrapper(async (req, res) => {
+    const tempData = {
+      id: "",
+      email: "",
+    };
+    const jwt_secret = process.env.JWT_SECRET;
+    const tokenTime = -120;
+    const token = jwt.sign(tempData, jwt_secret, { expiresIn: tokenTime });
+    return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.LOGOUT_SUCCESSFULL, {
+      token,
+    });
+  }),
 };
 
 module.exports = accountSetupController;

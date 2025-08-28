@@ -16,6 +16,8 @@ const userSchema = new Schema(
       required: true,
       lowercase: true,
       trim: true,
+      unique: true, // unique automatically creates index for a property and indexes are used
+      // for efficient querying of Database resulting in less load times
     },
     password: {
       type: String,

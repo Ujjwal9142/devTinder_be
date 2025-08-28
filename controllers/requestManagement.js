@@ -27,7 +27,7 @@ const requestManagementController = {
       );
     }
 
-    if (fromUserId == toUserId) {
+    if (fromUserId.toString() == toUserId.toString()) {
       return resp.cResponse(req, res, resp.BAD_REQUEST, con.requestManagement.SELF_REQUEST_INVALID);
     }
 
@@ -62,6 +62,56 @@ const requestManagementController = {
     } else {
       return resp.cResponse(req, res, resp.SUCCESS, con.requestManagement.REQUEST_ALREADY_EXISTS);
     }
+  }),
+
+  reviewConnectionRequest: asyncWrapper(async (req, res) => {
+    validationHelper(req);
+    const loggedinUserId = req.user._id;
+    const requestId = req.params.requestId;
+    const status = req.params.status;
+    const allowedStatus = [
+      con.requestManagement.STATUS_ACCEPTED,
+      con.requestManagement.STATUS_REJECTED,
+    ];
+
+    if (!allowedStatus.includes(status)) {
+      return resp.cResponse(
+        req,
+        res,
+        resp.EXPECTATION_FAILED,
+        con.requestManagement.INVALID_REVIEW_STATUS
+      );
+    }
+
+    const existingConnectionRequest = await ConnectionRequest.findById(requestId);
+    if (!existingConnectionRequest) {
+      return resp.cResponse(req, res, resp.NOT_FOUND, con.requestManagement.NO_REQUEST_FOR_ID);
+    }
+
+    if (!existingConnectionRequest.toUserId.equals(loggedinUserId)) {
+      return resp.cResponse(req, res, resp.UNAUTHORIZED, con.accountManagement.UNAUTHORIZED_ACTION);
+    }    
+
+    if (existingConnectionRequest.status !== con.requestManagement.STATUS_INTERESTED) {
+      return resp.cResponse(
+        req,
+        res,
+        resp.FORBIDDEN_ERROR,
+        con.requestManagement.REVIEW_ONLY_INTERESTED
+      );
+    }
+
+    existingConnectionRequest.status = status;
+    const response = await existingConnectionRequest.save();
+
+    if (status === con.requestManagement.STATUS_ACCEPTED) {
+      return resp.cResponse(req, res, resp.SUCCESS, con.requestManagement.ACCEPTED_SUCESSFULLY, {
+        requestData: response,
+      });
+    }
+    return resp.cResponse(req, res, resp.SUCCESS, con.requestManagement.REJECTED_SUCESSFULLY, {
+      requestData: response,
+    });
   }),
 };
 

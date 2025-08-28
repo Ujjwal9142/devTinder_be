@@ -17,4 +17,17 @@ module.exports = (router) => {
     }),
     requestManagementController.sendConnectionRequest
   );
+
+  router.post(
+    "/request/review/:status/:requestId",
+    isUserAuthenticated,
+    check("requestId").custom((value) => {
+      if (!common.isValidMongoId(value)) {
+        const error = new Error(con.requestManagement.INVALID_REQUEST_ID);
+        throw error;
+      }
+      return true;
+    }),
+    requestManagementController.reviewConnectionRequest
+  );
 };

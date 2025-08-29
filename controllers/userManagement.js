@@ -1,10 +1,13 @@
 const User = require("../models/user");
+const ConnectionRequest = require("../models/connectionRequest");
 const asyncWrapper = require("../helpers/asyncWrapper");
 const resp = require("../helpers/response");
 const validationHelper = require("../helpers/validation");
 const con = require("../constants/index");
 const common = require("../helpers/common");
 const moment = require("moment");
+
+const USER_POPULATE_SAFE_DATA = "firstName lastName imageUrl gender about skills dateOfBirth";
 
 const userManagementController = {
   getUserByEmail: asyncWrapper(async (req, res) => {
@@ -53,6 +56,42 @@ const userManagementController = {
     }));
     return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
       users: formattedUsers,
+    });
+  }),
+
+  getPendingConnectionRequests: asyncWrapper(async (req, res) => {
+    validationHelper(req);
+    const loggedinUserId = req.user._id;
+    const connections = await ConnectionRequest.find({
+      toUserId: loggedinUserId,
+      status: con.requestManagement.STATUS_INTERESTED,
+    }).populate("fromUserId", USER_POPULATE_SAFE_DATA);
+
+    return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
+      connectionRequests: connections,
+    });
+  }),
+
+  getUserConnections: asyncWrapper(async (req, res) => {
+    validationHelper(req);
+    const loggedinUserId = req.user._id;
+    const connections = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedinUserId }, { toUserId: loggedinUserId }],
+      status: con.requestManagement.STATUS_ACCEPTED,
+    }).populate([
+      { path: "fromUserId", select: USER_POPULATE_SAFE_DATA },
+      { path: "toUserId", select: USER_POPULATE_SAFE_DATA },
+    ]);
+
+    const responseData = connections?.map((item) => {
+      if (item.fromUserId._id.toString() === loggedinUserId.toString()) {
+        return item.toUserId;
+      }
+      return item.fromUserId;
+    });
+
+    return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
+      connectionRequests: responseData,
     });
   }),
 };

@@ -7,13 +7,14 @@ const isUserAuthenticated = require("../middlewares/isAuth");
 module.exports = (router) => {
   router.get(
     "/getUserByEmail",
-    [check("email", con.accountManagement.INVALID_EMAIL).isEmail()],
     isUserAuthenticated,
+    [check("email", con.accountManagement.INVALID_EMAIL).isEmail()],
     userManagementController.getUserByEmail
   );
 
   router.post(
     "/feed",
+    isUserAuthenticated,
     [
       check("pageNumber")
         .exists()
@@ -26,7 +27,14 @@ module.exports = (router) => {
         .isIn([10, 25, 50, 100])
         .withMessage(con.userManagement.INVALID_PAGE_SIZE),
     ],
-    isUserAuthenticated,
     userManagementController.feed
   );
+
+  router.get(
+    "/user/requests/recieved",
+    isUserAuthenticated,
+    userManagementController.getPendingConnectionRequests
+  );
+
+  router.get("/user/connections", isUserAuthenticated, userManagementController.getUserConnections);
 };

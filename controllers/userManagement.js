@@ -33,29 +33,36 @@ const userManagementController = {
     });
   }),
 
-  feed: asyncWrapper(async (req, res) => {
+  getUserFeed: asyncWrapper(async (req, res) => {
     validationHelper(req);
     const { pageNumber = 1, pageSize = 10 } = req.body;
     const skippedItems = (pageNumber - 1) * pageSize;
-    const users = await User.find().skip(skippedItems).limit(pageSize);
+    const loggedinUserId = req.user._id;
+
+    const allConnectionRequests = await ConnectionRequest.find({
+      $or: [{ fromUserId: loggedinUserId }, { toUserId: loggedinUserId }],
+    }).select("fromUserId toUserId");
+
+    const hideUsersFromFeed = new Set();
+    allConnectionRequests.forEach((req) => {
+      hideUsersFromFeed.add(req.fromUserId.toString());
+      hideUsersFromFeed.add(req.toUserId.toString());
+    });
+
+    const users = await User.find({
+      $and: [{ _id: { $nin: Array.from(hideUsersFromFeed) } }, { _id: { $ne: loggedinUserId } }],
+    })
+      .skip(skippedItems)
+      .limit(pageSize)
+      .select(USER_POPULATE_SAFE_DATA);
+
     if (!users || users.length === 0) {
       return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.NO_RECORD, {
         users: [],
       });
     }
-    const formattedUsers = users.map((user) => ({
-      id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      gender: user.gender,
-      dob: moment(user.dateOfBirth).format("YYYY-MM-DD"),
-      imageUrl: user.imageUrl,
-      skills: user.skills,
-      about: user.about,
-    }));
     return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
-      users: formattedUsers,
+      users: users,
     });
   }),
 

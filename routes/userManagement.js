@@ -13,7 +13,7 @@ module.exports = (router) => {
   );
 
   router.post(
-    "/feed",
+    "/user/feed",
     isUserAuthenticated,
     [
       check("pageNumber")
@@ -27,7 +27,7 @@ module.exports = (router) => {
         .isIn([10, 25, 50, 100])
         .withMessage(con.userManagement.INVALID_PAGE_SIZE),
     ],
-    userManagementController.feed
+    userManagementController.getUserFeed
   );
 
   router.get(

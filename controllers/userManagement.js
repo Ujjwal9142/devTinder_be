@@ -98,7 +98,7 @@ const userManagementController = {
     });
 
     return resp.cResponse(req, res, resp.SUCCESS, con.accountManagement.RECORD_SUCCESS, {
-      connectionRequests: responseData,
+      connections: responseData,
     });
   }),
 };

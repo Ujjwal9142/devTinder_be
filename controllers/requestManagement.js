@@ -7,6 +7,8 @@ const con = require("../constants/index");
 const common = require("../helpers/common");
 const moment = require("moment");
 
+const USER_POPULATE_SAFE_DATA = "email firstName lastName imageUrl gender about skills dateOfBirth";
+
 const requestManagementController = {
   sendConnectionRequest: asyncWrapper(async (req, res) => {
     validationHelper(req);
@@ -83,14 +85,18 @@ const requestManagementController = {
       );
     }
 
-    const existingConnectionRequest = await ConnectionRequest.findById(requestId);
+    const existingConnectionRequest = await ConnectionRequest.findById(requestId).populate([
+      { path: "fromUserId", select: USER_POPULATE_SAFE_DATA },
+      { path: "toUserId", select: USER_POPULATE_SAFE_DATA },
+    ]);
+
     if (!existingConnectionRequest) {
       return resp.cResponse(req, res, resp.NOT_FOUND, con.requestManagement.NO_REQUEST_FOR_ID);
     }
 
     if (!existingConnectionRequest.toUserId.equals(loggedinUserId)) {
       return resp.cResponse(req, res, resp.UNAUTHORIZED, con.accountManagement.UNAUTHORIZED_ACTION);
-    }    
+    }
 
     if (existingConnectionRequest.status !== con.requestManagement.STATUS_INTERESTED) {
       return resp.cResponse(
@@ -101,8 +107,16 @@ const requestManagementController = {
       );
     }
 
+    const emailCreds = {
+      reciverEmail: existingConnectionRequest.fromUserId.email,
+      requestStatus: status,
+      requestedPersonName: `${existingConnectionRequest.toUserId.firstName} ${existingConnectionRequest.toUserId.lastName}`,
+      recieverName: `${existingConnectionRequest.fromUserId.firstName} ${existingConnectionRequest.fromUserId.lastName}`,
+    };
+
     existingConnectionRequest.status = status;
     const response = await existingConnectionRequest.save();
+    await common.sendEmail(emailCreds);
 
     if (status === con.requestManagement.STATUS_ACCEPTED) {
       return resp.cResponse(req, res, resp.SUCCESS, con.requestManagement.ACCEPTED_SUCESSFULLY, {
